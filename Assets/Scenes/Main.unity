@@ -642,6 +642,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawn
   spawnPoint: {fileID: 0}
+--- !u!114 &1499685148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1499685140}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c70ab368b3e54842a3057ab8bdf66c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerLife
 --- !u!1001 &1517615189
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -988,6 +1000,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1499685147}
+    - targetCorrespondingSourceObject: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1499685148}
   m_SourcePrefab: {fileID: 100100000, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
 --- !u!1001 &1685800716757157176
 PrefabInstance:
