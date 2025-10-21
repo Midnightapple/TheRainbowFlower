@@ -5,35 +5,35 @@ using System.Collections;
 public class PlayerPlatformer : MonoBehaviour
 {
     [Header("Move")]
-    public float moveSpeed = 8f;         // 地面目标速度
-    public float airControl = 0.6f;      // 空中转向比例
-    public float accel = 50f;            // 加速
-    public float decel = 60f;            // 减速
-    public float maxFallSpeed = -18f;    // 最大下落速度（向下为负）
+    public float moveSpeed = 8f;
+    public float airControl = 0.6f;
+    public float accel = 50f;
+    public float decel = 60f;
+    public float maxFallSpeed = -18f;
 
     [Header("Jump")]
-    public float jumpForce = 13f;        // 起跳冲量
-    public float coyoteTime = 0.12f;     // ✅ 土狼时间：离地后这段时间仍可起跳
-    public float jumpBuffer = 0.12f;     // 跳跃缓冲：提前按跳
-    public float jumpCutMultiplier = 0.5f;// 可变跳：松开跳剪切上升
+    public float jumpForce = 13f;
+    public float coyoteTime = 0.12f;
+    public float jumpBuffer = 0.12f;
+    public float jumpCutMultiplier = 0.5f;
 
     [Header("Ground / Wall Check")]
-    public Transform groundCheck;        // 脚底探测点（放在碰撞体底部外一点）
-    public Transform wallCheckLeft;      // 左墙探测点（身体左侧外一点）
-    public Transform wallCheckRight;     // 右墙探测点（身体右侧外一点）
+    public Transform groundCheck;
+    public Transform wallCheckLeft;
+    public Transform wallCheckRight;
     public float groundRadius = 0.2f;
     public float wallRadius = 0.2f;
-    public LayerMask groundMask;         // 勾选 Ground 层
+    public LayerMask groundMask;
 
     [Header("Wall Slide & Wall Jump")]
-    public float wallSlideSpeed = -3.5f; // 墙滑最大下落速度
-    public Vector2 wallJumpImpulse = new Vector2(12f, 14f); // 墙跳冲量（更远）
-    public float wallJumpLockTime = 0.12f; // 墙跳后短暂无反向吸墙
+    public float wallSlideSpeed = -3.5f;
+    public Vector2 wallJumpImpulse = new Vector2(12f, 14f);
+    public float wallJumpLockTime = 0.12f;
 
-    [Header("Dash（地面与空中都可用）")]
-    public float dashSpeed = 20f;        // 冲刺速度
-    public float dashTime = 0.18f;       // 冲刺持续
-    public float dashCooldown = 0.35f;   // 冷却
+    [Header("Dash")]
+    public float dashSpeed = 20f;
+    public float dashTime = 0.18f;
+    public float dashCooldown = 0.35f;
     public KeyCode dashKey = KeyCode.LeftShift;
 
     // 组件
@@ -47,12 +47,15 @@ public class PlayerPlatformer : MonoBehaviour
     bool wallJumpLock;
     bool isDashing;
 
+    // ★ 空中冲刺是否已用掉（只在落地重置）
+    bool airDashUsed;
+
     // 计时器
     float lastDashTime;
     float lastPressJumpTime;
-    float lastOnGroundTime; // 用于土狼时间
+    float lastOnGroundTime;
 
-    // 方向记忆（无输入时冲刺用）
+    // 方向记忆（无输入时用）
     Vector2 lastMoveDir = Vector2.right;
 
     void Awake()
@@ -64,39 +67,51 @@ public class PlayerPlatformer : MonoBehaviour
 
     void Update()
     {
-        // —— 输入 —— //
+        // 输入
         float x = Input.GetAxisRaw("Horizontal");
-        Vector2 rawDir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        float y = Input.GetAxisRaw("Vertical");
+        Vector2 rawDir = new Vector2(x, y);
         if (Mathf.Abs(x) > 0.01f) lastMoveDir = new Vector2(Mathf.Sign(x), 0f);
 
-        // —— 计时器衰减 —— //
+        // 计时器
         lastPressJumpTime -= Time.deltaTime;
         lastOnGroundTime  -= Time.deltaTime;
 
-        // —— 探测 —— //
+        // 探测
         isOnGround    = Physics2D.OverlapCircle(groundCheck.position,  groundRadius, groundMask);
         touchingWallL = Physics2D.OverlapCircle(wallCheckLeft.position, wallRadius, groundMask);
         touchingWallR = Physics2D.OverlapCircle(wallCheckRight.position,wallRadius, groundMask);
         bool touchingWall = (touchingWallL || touchingWallR) && !isOnGround;
 
-        // 落地时刷新土狼时间
-        if (isOnGround) lastOnGroundTime = coyoteTime;
-
-        // 跳跃缓冲：记录“最近按过跳”
-        if (Input.GetButtonDown("Jump")) lastPressJumpTime = jumpBuffer;
-
-        // —— 冲刺（地面/空中均可触发）—— //
-        if (!isDashing && Time.time >= lastDashTime + dashCooldown && Input.GetKeyDown(dashKey))
+        // 落地刷新：土狼 + 空中冲刺次数
+        if (isOnGround)
         {
-            Vector2 dir = rawDir.sqrMagnitude > 0.01f ? rawDir.normalized
-                                                      : (lastMoveDir.sqrMagnitude > 0 ? lastMoveDir : Vector2.right);
-            StartCoroutine(CoDash(dir));
+            lastOnGroundTime = coyoteTime;
+            airDashUsed = false; // ★ 只在落地时重置
         }
 
-        // —— 起跳逻辑：优先普通跳，其次墙跳 —— //
+        // 跳跃缓冲
+        if (Input.GetButtonDown("Jump")) lastPressJumpTime = jumpBuffer;
+
+        // —— 冲刺触发：八向 + 空中仅一次 —— //
+        if (!isDashing && Time.time >= lastDashTime + dashCooldown && Input.GetKeyDown(dashKey))
+        {
+            bool canDash = isOnGround || !airDashUsed; // 地面无限，空中只能一次
+            if (canDash)
+            {
+                Vector2 chosen = rawDir.sqrMagnitude > 0.01f ? rawDir
+                                : (lastMoveDir.sqrMagnitude > 0 ? lastMoveDir : Vector2.right);
+
+                Vector2 dir = QuantizeToEightDir(chosen); // ★ 八向量化
+                StartCoroutine(CoDash(dir));
+
+                if (!isOnGround) airDashUsed = true; // ★ 空中消耗
+            }
+        }
+
+        // 起跳优先普通跳，其次墙跳
         if (lastPressJumpTime > 0f)
         {
-            // 允许在“离地后的土狼窗口”内起跳
             if (lastOnGroundTime > 0f && !isDashing)
             {
                 JumpUp();
@@ -107,15 +122,15 @@ public class PlayerPlatformer : MonoBehaviour
             }
         }
 
-        // —— 可变跳 —— //
+        // 可变跳
         if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0f && !isDashing)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpCutMultiplier);
 
-        // —— 水平移动（非冲刺中）—— //
+        // 水平移动（非冲刺中）
         if (!isDashing)
         {
             float inputX = x;
-            if (wallJumpLock) // 墙跳后短暂无反向吸墙
+            if (wallJumpLock)
                 inputX = Mathf.Clamp(inputX, 0f, 1f) * (touchingWallL ? 1 : (touchingWallR ? -1 : Mathf.Sign(inputX)));
 
             float target = inputX * moveSpeed;
@@ -125,18 +140,18 @@ public class PlayerPlatformer : MonoBehaviour
             rb.linearVelocity = new Vector2(vx, Mathf.Max(rb.linearVelocity.y, maxFallSpeed));
         }
 
-        // —— 墙滑 —— //
+        // 墙滑
         isWallSliding = (touchingWallL || touchingWallR) && rb.linearVelocity.y < wallSlideSpeed && !isDashing;
         if (isWallSliding) rb.linearVelocity = new Vector2(rb.linearVelocity.x, wallSlideSpeed);
 
-        // —— 朝向翻转 —— //
+        // 朝向翻转
         if (sr && Mathf.Abs(x) > 0.01f) sr.flipX = x < 0;
     }
 
     void JumpUp()
     {
         lastPressJumpTime = 0f;
-        lastOnGroundTime  = 0f; // 用掉土狼机会
+        lastOnGroundTime  = 0f;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
     }
@@ -144,7 +159,7 @@ public class PlayerPlatformer : MonoBehaviour
     void WallJump()
     {
         lastPressJumpTime = 0f;
-        int dir = touchingWallL ? 1 : -1; // 左墙→向右；右墙→向左
+        int dir = touchingWallL ? 1 : -1;
         Vector2 v = new Vector2(dir * wallJumpImpulse.x, wallJumpImpulse.y);
         rb.linearVelocity = Vector2.zero;
         rb.AddForce(v, ForceMode2D.Impulse);
@@ -171,12 +186,40 @@ public class PlayerPlatformer : MonoBehaviour
         while (t > 0f)
         {
             t -= Time.deltaTime;
-            rb.linearVelocity = dir * dashSpeed; // 期间保持冲刺速度
+            rb.linearVelocity = dir * dashSpeed; // 维持冲刺方向与速度
             yield return null;
         }
 
         rb.gravityScale = originalGravity;
         isDashing = false;
+    }
+
+    // ★ 八向量化
+    Vector2 QuantizeToEightDir(Vector2 input)
+    {
+        if (input.sqrMagnitude < 1e-6f) return Vector2.right;
+        Vector2 n = input.normalized;
+
+        Vector2[] dirs = new Vector2[]
+        {
+            new Vector2(1,0),   // →
+            new Vector2(1,1).normalized,   // 
+            new Vector2(0,1),   // ↑
+            new Vector2(-1,1).normalized,  // 
+            new Vector2(-1,0),  // ←
+            new Vector2(-1,-1).normalized, // 
+            new Vector2(0,-1),  // ↓
+            new Vector2(1,-1).normalized   // 
+        };
+
+        int best = 0;
+        float bestDot = -999f;
+        for (int i = 0; i < dirs.Length; i++)
+        {
+            float d = Vector2.Dot(n, dirs[i]);
+            if (d > bestDot) { bestDot = d; best = i; }
+        }
+        return dirs[best];
     }
 
     void OnDrawGizmosSelected()
