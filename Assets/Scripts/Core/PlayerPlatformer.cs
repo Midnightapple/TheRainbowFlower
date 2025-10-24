@@ -35,6 +35,9 @@ public class PlayerPlatformer : MonoBehaviour
     public float dashTime = 0.18f;
     public float dashCooldown = 0.35f;
     public KeyCode dashKey = KeyCode.LeftShift;
+    public float horizontalDashGravity = 0f;  // ★ 水平冲刺时的重力（0=不下落）
+    public float verticalDashGravity = 4f;    // ★ 垂直/斜向冲刺时的重力（建议比正常重力大）
+    public float upwardDashSpeedMultiplier = 0.7f;
 
     // 组件
     Rigidbody2D rb;
@@ -46,6 +49,7 @@ public class PlayerPlatformer : MonoBehaviour
     bool isWallSliding;
     bool wallJumpLock;
     bool isDashing;
+    bool wasOnGround;
 
     // ★ 空中冲刺是否已用掉（只在落地重置）
     bool airDashUsed;
@@ -84,7 +88,7 @@ public class PlayerPlatformer : MonoBehaviour
         bool touchingWall = (touchingWallL || touchingWallR) && !isOnGround;
 
         // 落地刷新：土狼 + 空中冲刺次数
-        if (isOnGround)
+        if (isOnGround && !wasOnGround)
         {
             lastOnGroundTime = coyoteTime;
             airDashUsed = false; // ★ 只在落地时重置
@@ -179,14 +183,50 @@ public class PlayerPlatformer : MonoBehaviour
         lastDashTime = Time.time;
 
         float originalGravity = rb.gravityScale;
-        rb.gravityScale = 0f;
-        rb.linearVelocity = dir.normalized * dashSpeed;
-
-        float t = dashTime;
-        while (t > 0f)
+        
+        // ★ 判断冲刺方向
+        bool isHorizontalDash = Mathf.Abs(dir.y) < 0.1f;
+        bool isUpwardDash = dir.y > 0.1f;
+        bool isDownwardDash = dir.y < -0.1f;
+        
+        // ★ 设置重力
+        if (isHorizontalDash)
         {
-            t -= Time.deltaTime;
-            rb.linearVelocity = dir * dashSpeed; // 维持冲刺方向与速度
+            rb.gravityScale = horizontalDashGravity; // 水平：0
+        }
+        else if (isUpwardDash)
+        {
+            rb.gravityScale = verticalDashGravity; // 向上：强重力
+        }
+        else if (isDownwardDash)
+        {
+            rb.gravityScale = 0f; // 向下：无重力（加速下落）
+        }
+        else
+        {
+            rb.gravityScale = verticalDashGravity; // 斜向：正常
+        }
+        
+        // ★ 向上冲刺降低初始速度
+        float actualSpeed = isUpwardDash ? (dashSpeed * upwardDashSpeedMultiplier) : dashSpeed;
+        rb.linearVelocity = dir.normalized * actualSpeed;
+
+        float elapsed = 0f;
+        while (elapsed < dashTime)
+        {
+            elapsed += Time.deltaTime;
+            
+            if (isHorizontalDash)
+            {
+                // 水平冲刺：完全锁定速度，不受重力影响
+                rb.linearVelocity = dir.normalized * dashSpeed;
+            }
+            else
+            {
+                // ★ 垂直/斜向冲刺：不再每帧设置速度，完全交给物理引擎处理
+                // 什么都不做，让重力自然作用
+            }
+            
             yield return null;
         }
 
@@ -202,14 +242,14 @@ public class PlayerPlatformer : MonoBehaviour
 
         Vector2[] dirs = new Vector2[]
         {
-            new Vector2(1,0),   // →
-            new Vector2(1,1).normalized,   // 
-            new Vector2(0,1),   // ↑
-            new Vector2(-1,1).normalized,  // 
-            new Vector2(-1,0),  // ←
-            new Vector2(-1,-1).normalized, // 
-            new Vector2(0,-1),  // ↓
-            new Vector2(1,-1).normalized   // 
+            Vector2.right,                    // →
+            new Vector2(1,1).normalized,      // ↗
+            Vector2.up,                       // ↑
+            new Vector2(-1,1).normalized,     // ↖
+            Vector2.left,                     // ←
+            new Vector2(-1,-1).normalized,    // ↙
+            Vector2.down,                     // ↓
+            new Vector2(1,-1).normalized      // ↘
         };
 
         int best = 0;

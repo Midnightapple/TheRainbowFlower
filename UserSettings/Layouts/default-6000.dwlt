@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1536
     height: 780.8
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Scene
   m_RootView: {fileID: 6}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -48,7 +48,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 105
+  controlID: 44
   draggingID: 0
 --- !u!114 &3
 MonoBehaviour:
@@ -224,7 +224,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 55
+  controlID: 45
   draggingID: 0
 --- !u!114 &10
 MonoBehaviour:
@@ -363,7 +363,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/Core
+    - Assets/Prefabs
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -373,15 +373,15 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 16
   m_LastFolders:
-  - Assets/Scripts/Core
+  - Assets/Prefabs
   m_LastFoldersGridSize: 16
   m_LastProjectPath: D:\PlateformRougueLike
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: d0b70000
-    m_LastClickedID: 47056
+    scrollPos: {x: 0, y: 47}
+    m_SelectedIDs: 8cb70000
+    m_LastClickedID: 46988
     m_ExpandedIDs: 0000000056b6000090b70000ffffff7f
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -443,15 +443,15 @@ MonoBehaviour:
     m_ExpandedInstanceIDs: c6230000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
-      m_Name: PlayerPlatformer
-      m_OriginalName: PlayerPlatformer
+      m_Name: Boundary_Bottom
+      m_OriginalName: Boundary_Bottom
       m_EditFieldRect:
         serializedVersion: 2
         x: 0
         y: 0
         width: 0
         height: 0
-      m_UserData: 25268
+      m_UserData: 49166
       m_IsWaitingForDelay: 0
       m_IsRenaming: 0
       m_OriginalEventType: 0
@@ -512,7 +512,7 @@ MonoBehaviour:
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 274.39996
+  m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:
@@ -557,9 +557,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: f2b50000
-      m_LastClickedID: 46578
-      m_ExpandedIDs: fefaffff
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: c2a4ffff22abffffd8b6ffff04fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1149,9 +1149,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: -7.567906, y: 3.6229258, z: -8.408964}
+    m_Target: {x: -2.3200908, y: 4.202863, z: -8.429899}
     speed: 2
-    m_Value: {x: -7.567906, y: 3.6229258, z: -8.408964}
+    m_Value: {x: -1.6921859, y: 4.1573353, z: -8.435116}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1201,9 +1201,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 8.977055
+    m_Target: 11.071064
     speed: 2
-    m_Value: 8.977055
+    m_Value: 11.592737
   m_Ortho:
     m_Target: 1
     speed: 2
