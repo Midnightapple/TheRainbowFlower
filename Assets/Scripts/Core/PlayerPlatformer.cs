@@ -82,6 +82,7 @@ public class PlayerPlatformer : MonoBehaviour
         lastOnGroundTime  -= Time.deltaTime;
 
         // 探测
+        wasOnGround = isOnGround;
         isOnGround    = Physics2D.OverlapCircle(groundCheck.position,  groundRadius, groundMask);
         touchingWallL = Physics2D.OverlapCircle(wallCheckLeft.position, wallRadius, groundMask);
         touchingWallR = Physics2D.OverlapCircle(wallCheckRight.position,wallRadius, groundMask);
@@ -90,8 +91,12 @@ public class PlayerPlatformer : MonoBehaviour
         // 落地刷新：土狼 + 空中冲刺次数
         if (isOnGround && !wasOnGround)
         {
+            airDashUsed = false;
+        }
+
+        if (isOnGround)
+        {
             lastOnGroundTime = coyoteTime;
-            airDashUsed = false; // ★ 只在落地时重置
         }
 
         // 跳跃缓冲
@@ -100,16 +105,15 @@ public class PlayerPlatformer : MonoBehaviour
         // —— 冲刺触发：八向 + 空中仅一次 —— //
         if (!isDashing && Time.time >= lastDashTime + dashCooldown && Input.GetKeyDown(dashKey))
         {
-            bool canDash = isOnGround || !airDashUsed; // 地面无限，空中只能一次
-            if (canDash)
+            if (!airDashUsed)  // 只检查是否已使用
             {
                 Vector2 chosen = rawDir.sqrMagnitude > 0.01f ? rawDir
                                 : (lastMoveDir.sqrMagnitude > 0 ? lastMoveDir : Vector2.right);
 
-                Vector2 dir = QuantizeToEightDir(chosen); // ★ 八向量化
+                Vector2 dir = QuantizeToEightDir(chosen);
                 StartCoroutine(CoDash(dir));
 
-                if (!isOnGround) airDashUsed = true; // ★ 空中消耗
+                airDashUsed = true;  // 无论哪里冲刺都标记
             }
         }
 
