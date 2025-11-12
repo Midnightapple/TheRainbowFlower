@@ -1,41 +1,38 @@
 using UnityEngine;
-public enum KillReason {Fall, Hazard}
+public enum KillReason {Fall, Hazard, Enemy}
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerLife : MonoBehaviour
 {
-    [Header("Shield")]
-    public int shieldCount = 0;
-    
     bool isDead = false;
     PlayerRespawn respawn;
+    PlayerSkills skills;
 
     void Awake()
     {
         respawn = GetComponent<PlayerRespawn>();
+        skills = GetComponent<PlayerSkills>();
     }
 
-    public void AddShields(int amount = 1)
-    {
-        if (amount <= 0) return;
-        shieldCount += amount;
-    }
 
-    bool TryConsumeShield()
+
+public void Die(KillReason reason)
     {
-        if (shieldCount > 0)
+        // 1) 坠落：不消耗护盾，直接复位
+        if (reason == KillReason.Fall)
         {
-            shieldCount--;
-            return true;
-        }
-        return false;
-    }
-
-    public void Die(KillReason reason)
-    {
-        if (reason != KillReason.Fall && TryConsumeShield()) 
+            if (isDead) return;
+            isDead = true;
+            respawn.Respawn();
+            isDead = false;
             return;
-        
+        }
+
+        // 2) 敌人/陷阱：若有护盾 → 抵消这次伤害（不死亡）
+        if (skills != null && skills.TryConsumeShield())
+            return;
+
+        // 3) 没护盾 → 正常死亡并复位
         if (isDead) return;
         isDead = true;
         respawn.Respawn();

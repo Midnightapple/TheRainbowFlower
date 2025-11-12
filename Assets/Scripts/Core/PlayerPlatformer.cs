@@ -48,7 +48,7 @@ public class PlayerPlatformer : MonoBehaviour
     bool touchingWallL, touchingWallR;
     bool isWallSliding;
     bool wallJumpLock;
-    bool isDashing;
+    public bool isDashing;
     bool wasOnGround;
 
     // ★ 空中冲刺是否已用掉（只在落地重置）
