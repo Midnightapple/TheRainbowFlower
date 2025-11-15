@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(PolygonCollider2D))]
-public class SpikeTriangleSimple : MonoBehaviour
+public class SpikeTriangle : MonoBehaviour
 {
     [Tooltip("勾选=触发器（不挡路）；不勾选=实体碰撞（会挡路）")]
     public bool useTrigger = true;
@@ -51,12 +51,8 @@ public class SpikeTriangleSimple : MonoBehaviour
 
     void Hit(GameObject player)
     {
-        // 优先用带延迟/动画的 PlayerLife
-        //var life = player.GetComponent<PlayerLife>();
-        //if (life != null) { life.Die(); return; }
-
-        // 没有就直接复位
-        var respawn = player.GetComponent<PlayerRespawn>();
-        if (respawn != null) respawn.Respawn();
+        
+        var life = player.GetComponent<PlayerLife>();
+        if (life != null) { life.Die(KillReason.Hazard); return; }
     }
 }

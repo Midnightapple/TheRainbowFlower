@@ -16,7 +16,7 @@ public class PlayerLife : MonoBehaviour
 
 
 
-public void Die(KillReason reason)
+    public void Die(KillReason reason)
     {
         // 1) 坠落：不消耗护盾，直接复位
         if (reason == KillReason.Fall)
@@ -24,6 +24,7 @@ public void Die(KillReason reason)
             if (isDead) return;
             isDead = true;
             respawn.Respawn();
+            ResetAllEnemies();
             isDead = false;
             return;
         }
@@ -36,6 +37,23 @@ public void Die(KillReason reason)
         if (isDead) return;
         isDead = true;
         respawn.Respawn();
+        ResetAllEnemies();
         isDead = false;
     }
+
+    void ResetAllEnemies()
+    {
+        // 包括被 SetActive(false) 的敌人
+        EnemyRespawn[] all =
+            FindObjectsByType<EnemyRespawn>(
+                FindObjectsInactive.Include,
+                FindObjectsSortMode.None
+            );
+
+        foreach (var e in all)
+        {
+            e.RespawnNow();
+        }
+    }
+
 }

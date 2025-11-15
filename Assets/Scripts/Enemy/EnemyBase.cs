@@ -103,6 +103,6 @@ public class EnemyBase : MonoBehaviour
     public virtual void Die()
     {
         // TODO: 掉落/特效/音效
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }
