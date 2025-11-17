@@ -403,6 +403,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerSkills
   shieldCount: 0
+  attackKey: 101
+  attackCharges: 0
+  attackCost: 1
+  attackRange: 10
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1001 &1168703097
 PrefabInstance:
   m_ObjectHideFlags: 0
