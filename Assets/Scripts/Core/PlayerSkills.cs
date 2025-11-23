@@ -6,6 +6,21 @@ public class PlayerSkills : MonoBehaviour
     [Tooltip("当前护盾层数（可无限）")]
     public int shieldCount = 0;
 
+    [Header("Smite Skill")]
+    public KeyCode attackKey = KeyCode.E;     // 按哪个键释放技能
+    public int attackCharges = 0;             // 当前可用次数/能量
+    public int attackCost = 1;                // 每次消耗多少点
+    public float attackRange = 5f;            // 技能半径
+    public LayerMask enemyMask;               // 敌人所在 Layer（比如 EnemySolid）
+
+    [Header("Place Platform Skill")]
+    public bool canPlacePlatform = false;     // 只在特定关卡勾上
+    public KeyCode platformKey = KeyCode.Q;   // 按 Q 进入放置模式
+    public GameObject platformPrefab;         // 拖你刚才做的 SkillPlatform
+    public int platformCharges = 1;           // 本关可放几个平台（可以设大一点）
+    
+    bool isChoosingPlatformPos = false;       // 是否正在选择位置
+
     /// 增加护盾层数（拾取/购买时调） 
     public void AddShields(int amount = 1)
     {
@@ -29,12 +44,6 @@ public class PlayerSkills : MonoBehaviour
     /// 是否至少有一层护盾 
     public bool HasShield => shieldCount > 0;
 
-    [Header("Smite Skill")]
-    public KeyCode attackKey = KeyCode.E;     // 按哪个键释放技能
-    public int attackCharges = 0;             // 当前可用次数/能量
-    public int attackCost = 1;                // 每次消耗多少点
-    public float attackRange = 5f;            // 技能半径
-    public LayerMask enemyMask;               // 敌人所在 Layer（比如 EnemySolid）
 
     void Update()
     {
@@ -42,6 +51,30 @@ public class PlayerSkills : MonoBehaviour
         if (Input.GetKeyDown(attackKey))
         {
             TryUseAttackSkill();
+        }
+
+        if (canPlacePlatform)
+        {
+            // 1. 按 Q 开启“选位置模式”
+            if (!isChoosingPlatformPos &&
+                platformCharges > 0 &&
+                Input.GetKeyDown(platformKey))
+            {
+                isChoosingPlatformPos = true;
+                // TODO: 可以在屏幕上提示“点击一个位置放平台”
+            }
+
+            // 2. 在选位置模式中，鼠标左键点击放置平台
+            if (isChoosingPlatformPos && Input.GetMouseButtonDown(0))
+            {
+                PlacePlatformAtMouse();
+            }
+
+            // 3. 右键取消
+            if (isChoosingPlatformPos && Input.GetMouseButtonDown(1))
+            {
+                isChoosingPlatformPos = false;
+            }
         }
     }
 
@@ -104,6 +137,24 @@ public class PlayerSkills : MonoBehaviour
         attackCharges -= attackCost;
         target.Die();   // 调用 EnemyBase 里的 Die()
         // TODO: 这里可以播放一个范围技能特效/音效
+    }
+
+    void PlacePlatformAtMouse()
+    {
+        if (platformPrefab == null) return;
+
+        // 从屏幕坐标转换到世界坐标
+        Vector3 mouseScreen = Input.mousePosition;
+        Vector3 world = Camera.main.ScreenToWorldPoint(mouseScreen);
+        world.z = 0f; // 2D 场景一般 z 取 0
+
+        // （简单版）直接生成。后期可以加合法区域检测。
+        Instantiate(platformPrefab, world, Quaternion.identity);
+
+        platformCharges--;
+        if (platformCharges < 0) platformCharges = 0;
+
+        isChoosingPlatformPos = false;
     }
 
 }
