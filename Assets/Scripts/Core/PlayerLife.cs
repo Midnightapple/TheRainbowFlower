@@ -25,6 +25,7 @@ public class PlayerLife : MonoBehaviour
             isDead = true;
             respawn.Respawn();
             ResetAllEnemies();
+            ResetAllPlatforms();
             isDead = false;
             return;
         }
@@ -38,6 +39,7 @@ public class PlayerLife : MonoBehaviour
         isDead = true;
         respawn.Respawn();
         ResetAllEnemies();
+        ResetAllPlatforms();
         isDead = false;
     }
 
@@ -54,6 +56,11 @@ public class PlayerLife : MonoBehaviour
         {
             e.RespawnNow();
         }
+    }
+
+    void ResetAllPlatforms()
+    {
+        SkillPlatformRuntime.ResetAll();
     }
 
 }

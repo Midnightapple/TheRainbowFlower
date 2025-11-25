@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3121182784351663436}
   - component: {fileID: 5146020357409833873}
   - component: {fileID: 4391154655642874659}
+  - component: {fileID: 2111970195746770412}
   m_Layer: 6
   m_Name: SkillPlateform
   m_TagString: Untagged
@@ -137,3 +138,15 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &2111970195746770412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5775425488327601433}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ba3596a67da97741bca8a79a469dcc8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillPlatformRuntime
