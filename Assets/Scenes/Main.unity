@@ -414,6 +414,10 @@ MonoBehaviour:
   platformKey: 113
   platformPrefab: {fileID: 5775425488327601433, guid: bf45ea3bcb4f3a54eb3bfc26146dae90, type: 3}
   platformCharges: 1
+  platformCheckSize: {x: 2, y: 0.4}
+  enemyMaskForPlatform:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1001 &1168703097
 PrefabInstance:
   m_ObjectHideFlags: 0

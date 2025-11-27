@@ -16,8 +16,11 @@ public class PlayerSkills : MonoBehaviour
     [Header("Place Platform Skill")]
     public bool canPlacePlatform = false;     // 只在特定关卡勾上
     public KeyCode platformKey = KeyCode.Q;   // 按 Q 进入放置模式
-    public GameObject platformPrefab;         // 拖你刚才做的 SkillPlatform
-    public int platformCharges = 1;           // 本关可放几个平台（可以设大一点）
+    public GameObject platformPrefab;         
+    public int platformCharges = 1;           // 本关可放几个平台
+
+    public Vector2 platformCheckSize = new Vector2(2f, 0.4f);
+    public LayerMask enemyMaskForPlatform;
     
     bool isChoosingPlatformPos = false;       // 是否正在选择位置
 
@@ -143,12 +146,29 @@ public class PlayerSkills : MonoBehaviour
     {
         if (platformPrefab == null) return;
 
-        // 从屏幕坐标转换到世界坐标
+        //  鼠标转世界坐标
         Vector3 mouseScreen = Input.mousePosition;
         Vector3 world = Camera.main.ScreenToWorldPoint(mouseScreen);
-        world.z = 0f; // 2D 场景一般 z 取 0
+        world.z = 0f;
 
-        // （简单版）直接生成。后期可以加合法区域检测。
+        // 检测这个位置附近有没有敌人
+        Collider2D hitEnemy = Physics2D.OverlapBox(
+            world,                 // 方框中心
+            platformCheckSize,     // 方框宽高
+            0f,                    // 不旋转
+            enemyMaskForPlatform   // 敌人所在 Layer
+        );
+
+        if (hitEnemy != null)
+        {
+            // 有敌人,不生成平台
+            Debug.Log("这里有敌人，不能放平台");
+            // 不消耗次数
+            isChoosingPlatformPos = false;
+            return;
+        }
+
+        // 通过检测,正常生成平台
         Instantiate(platformPrefab, world, Quaternion.identity);
 
         platformCharges--;
@@ -156,5 +176,6 @@ public class PlayerSkills : MonoBehaviour
 
         isChoosingPlatformPos = false;
     }
+
 
 }
