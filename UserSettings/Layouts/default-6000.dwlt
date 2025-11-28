@@ -379,7 +379,7 @@ MonoBehaviour:
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 31}
+    scrollPos: {x: 0, y: 15}
     m_SelectedIDs: e0b70000
     m_LastClickedID: 47072
     m_ExpandedIDs: 00000000a4b60000e4b70000ffffff7f
@@ -512,7 +512,7 @@ MonoBehaviour:
     m_ControlHash: -371814159
     m_PrefName: Preview_InspectorPreview
   m_LastInspectedObjectInstanceID: -1
-  m_LastVerticalScrollValue: 119.20001
+  m_LastVerticalScrollValue: 0
   m_GlobalObjectId: 
   m_InspectorMode: 0
   m_LockTracker:
@@ -557,9 +557,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: deb50000
-      m_LastClickedID: 46558
-      m_ExpandedIDs: 04fbffff
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: aa85ffff2087ffff3088ffff6c99ffffe69dffff809ffffff4a0ffff06d8ffffb2d8ffffd0d8ffff16d9ffffa8dbffffaadbffff50e3ffffa4e8ffff24f5ffff3af6ffff04fbffff7cc40000d4c60000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1149,9 +1149,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: -2.81872, y: 5.149618, z: -8.423781}
+    m_Target: {x: -10.705914, y: 6.404666, z: -8.456897}
     speed: 2
-    m_Value: {x: -2.81872, y: 5.149618, z: -8.423781}
+    m_Value: {x: -10.613194, y: 6.562073, z: -8.450967}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1201,9 +1201,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 10.458885
+    m_Target: 13.770135
     speed: 2
-    m_Value: 10.458885
+    m_Value: 13.177162
   m_Ortho:
     m_Target: 1
     speed: 2
