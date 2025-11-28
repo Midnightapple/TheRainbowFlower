@@ -51,7 +51,7 @@ public class PlayerPlatformer : MonoBehaviour
     public bool isDashing;
     bool wasOnGround;
 
-    // ★ 空中冲刺是否已用掉（只在落地重置）
+    // 空中冲刺是否已用掉（只在落地重置）
     bool airDashUsed;
 
     // 计时器
@@ -89,14 +89,15 @@ public class PlayerPlatformer : MonoBehaviour
         bool touchingWall = (touchingWallL || touchingWallR) && !isOnGround;
 
         // 落地刷新：土狼 + 空中冲刺次数
-        if (isOnGround && !wasOnGround)
-        {
-            airDashUsed = false;
-        }
+        //if (isOnGround && !wasOnGround)
+        //{
+        //    airDashUsed = false;
+        //}
 
         if (isOnGround)
         {
             lastOnGroundTime = coyoteTime;
+            airDashUsed = false;
         }
 
         // 跳跃缓冲
@@ -283,5 +284,17 @@ public class PlayerPlatformer : MonoBehaviour
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(wallCheckRight.position, wallRadius);
         }
+    }
+
+    public void ResetDashState()
+    {
+        // dash 状态清零
+        isDashing = false;
+        airDashUsed = false;
+
+        // 让冷却计时也清零
+        lastDashTime = Time.time - dashCooldown;
+
+        rb.linearVelocity = Vector2.zero;
     }
 }

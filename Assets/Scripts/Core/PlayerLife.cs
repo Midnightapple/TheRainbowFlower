@@ -7,11 +7,13 @@ public class PlayerLife : MonoBehaviour
     bool isDead = false;
     PlayerRespawn respawn;
     PlayerSkills skills;
+    PlayerPlatformer platformer;
 
     void Awake()
     {
         respawn = GetComponent<PlayerRespawn>();
         skills = GetComponent<PlayerSkills>();
+        platformer = GetComponent<PlayerPlatformer>();
     }
 
 
@@ -23,6 +25,10 @@ public class PlayerLife : MonoBehaviour
         {
             if (isDead) return;
             isDead = true;
+
+            if (platformer != null)
+                platformer.ResetDashState();
+
             respawn.Respawn();
             ResetAllEnemies();
             ResetAllPlatforms();
@@ -37,6 +43,10 @@ public class PlayerLife : MonoBehaviour
         // 3) 没护盾 → 正常死亡并复位
         if (isDead) return;
         isDead = true;
+
+        if (platformer != null)
+            platformer.ResetDashState();
+
         respawn.Respawn();
         ResetAllEnemies();
         ResetAllPlatforms();
