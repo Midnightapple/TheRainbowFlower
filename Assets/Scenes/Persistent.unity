@@ -181,13 +181,49 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 858808314}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 807209055}
   m_SourcePrefab: {fileID: 100100000, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
 --- !u!4 &147384046 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
   m_PrefabInstance: {fileID: 147384045}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &807209048 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+  m_PrefabInstance: {fileID: 147384045}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &807209055
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 807209048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bf1273d29ba11e4ebf22a112caffedc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkills
+  shieldCount: 0
+  attackKey: 101
+  attackCharges: 0
+  attackCost: 1
+  attackRange: 5
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 128
+  canPlacePlatform: 0
+  platformKey: 113
+  platformPrefab: {fileID: 5775425488327601433, guid: bf45ea3bcb4f3a54eb3bfc26146dae90, type: 3}
+  platformCharges: 1
+  platformCheckSize: {x: 2, y: 0.4}
+  enemyMaskForPlatform:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &858808313
 GameObject:
   m_ObjectHideFlags: 0
