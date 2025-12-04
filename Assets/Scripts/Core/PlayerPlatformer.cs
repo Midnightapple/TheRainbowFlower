@@ -35,9 +35,13 @@ public class PlayerPlatformer : MonoBehaviour
     public float dashTime = 0.18f;
     public float dashCooldown = 0.35f;
     public KeyCode dashKey = KeyCode.LeftShift;
-    public float horizontalDashGravity = 0f;  // ★ 水平冲刺时的重力（0=不下落）
-    public float verticalDashGravity = 4f;    // ★ 垂直/斜向冲刺时的重力（建议比正常重力大）
+    public float horizontalDashGravity = 0f;  // 水平冲刺时的重力（0=不下落）
+    public float verticalDashGravity = 4f;    // 垂直/斜向冲刺时的重力
     public float upwardDashSpeedMultiplier = 0.7f;
+
+    [HideInInspector]
+    public bool canControl = true;
+    float defaultGravity;
 
     // 组件
     Rigidbody2D rb;
@@ -67,10 +71,16 @@ public class PlayerPlatformer : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         rb.gravityScale = 3.2f;
+        defaultGravity = rb.gravityScale;
     }
 
     void Update()
     {
+        if (!canControl)
+        {
+            return;
+        }
+
         // 输入
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
@@ -297,4 +307,29 @@ public class PlayerPlatformer : MonoBehaviour
 
         rb.linearVelocity = Vector2.zero;
     }
+
+        // 对外接口：开启/关闭玩家操作
+    public void SetControlEnabled(bool enabled)
+    {
+        canControl = enabled;
+
+        if (!enabled)
+        {
+            // 禁用时：停掉所有协程、速度清零、关重力
+            StopAllCoroutines();
+            isDashing = false;
+            isWallSliding = false;
+            wallJumpLock = false;
+
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.gravityScale = 0f;
+        }
+        else
+        {
+            // 恢复操作：把重力恢复
+            rb.gravityScale = defaultGravity;
+        }
+    }
+
 }
