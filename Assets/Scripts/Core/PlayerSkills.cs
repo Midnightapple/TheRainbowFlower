@@ -142,6 +142,16 @@ public class PlayerSkills : MonoBehaviour
         // TODO: 这里可以播放一个范围技能特效/音效
     }
 
+    public void AddPlatformCharges(int amount)
+    {
+        if (amount <= 0) return;
+
+        platformCharges += amount;
+        if (platformCharges < 0) platformCharges = 0;
+
+        Debug.Log($"[技能] 平台技能增加 {amount} 次，现在共有 {platformCharges} 次。");
+    }
+
     void PlacePlatformAtMouse()
     {
         if (platformPrefab == null) return;
