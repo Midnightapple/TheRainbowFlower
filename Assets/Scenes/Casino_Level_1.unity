@@ -446,6 +446,10 @@ MonoBehaviour:
   - "\u6211\u60F3\u6211\u4EEC\u5E94\u8BE5\u901F\u6218\u901F\u51B3\uFF0C\u4E0D\u662F\u5417\uFF1F"
   npcName: 
   interactKey: 102
+  shieldReward: 0
+  attackChargeReward: 0
+  platformChargeReward: 0
+  rewardOnce: 1
 --- !u!61 &633134155
 BoxCollider2D:
   m_ObjectHideFlags: 0
