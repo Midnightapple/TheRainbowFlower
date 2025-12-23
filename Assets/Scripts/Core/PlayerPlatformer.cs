@@ -49,6 +49,7 @@ public class PlayerPlatformer : MonoBehaviour
 
     // 状态
     bool isOnGround;
+    public bool IsOnGround => isOnGround;
     bool touchingWallL, touchingWallR;
     bool isWallSliding;
     bool wallJumpLock;
