@@ -1,3 +1,4 @@
+/*  
 using UnityEngine;
 using System.Collections;
 
@@ -39,9 +40,6 @@ public class PlayerPlatformer : MonoBehaviour
     public float verticalDashGravity = 4f;    // 垂直/斜向冲刺时的重力
     public float upwardDashSpeedMultiplier = 0.7f;
 
-    [Header("Dash Hit Enemy")]
-    public LayerMask dashEnemyMask;           // ⚠ 把敌人所在的 Layer 勾到这里
-
     [HideInInspector]
     public bool canControl = true;
     float defaultGravity;
@@ -57,8 +55,6 @@ public class PlayerPlatformer : MonoBehaviour
     bool isWallSliding;
     bool wallJumpLock;
     public bool isDashing;
-    bool dashInterrupted;
-    Coroutine dashRoutine;
     bool wasOnGround;
 
     // 空中冲刺是否已用掉（只在落地重置）
@@ -105,6 +101,11 @@ public class PlayerPlatformer : MonoBehaviour
         bool touchingWall = (touchingWallL || touchingWallR) && !isOnGround;
 
         // 落地刷新：土狼 + 空中冲刺次数
+        //if (isOnGround && !wasOnGround)
+        //{
+        //    airDashUsed = false;
+        //}
+
         if (isOnGround)
         {
             lastOnGroundTime = coyoteTime;
@@ -123,13 +124,7 @@ public class PlayerPlatformer : MonoBehaviour
                                 : (lastMoveDir.sqrMagnitude > 0 ? lastMoveDir : Vector2.right);
 
                 Vector2 dir = QuantizeToEightDir(chosen);
-
-                // 启动 dash 协程前，清理旧的
-                if (dashRoutine != null)
-                {
-                    StopCoroutine(dashRoutine);
-                }
-                dashRoutine = StartCoroutine(CoDash(dir));
+                StartCoroutine(CoDash(dir));
 
                 airDashUsed = true;  // 无论哪里冲刺都标记
             }
@@ -202,17 +197,16 @@ public class PlayerPlatformer : MonoBehaviour
     IEnumerator CoDash(Vector2 dir)
     {
         isDashing = true;
-        dashInterrupted = false;
         lastDashTime = Time.time;
 
         float originalGravity = rb.gravityScale;
         
-        // 判断冲刺方向
+        // ★ 判断冲刺方向
         bool isHorizontalDash = Mathf.Abs(dir.y) < 0.1f;
         bool isUpwardDash = dir.y > 0.1f;
         bool isDownwardDash = dir.y < -0.1f;
         
-        // 设置重力
+        // ★ 设置重力
         if (isHorizontalDash)
         {
             rb.gravityScale = horizontalDashGravity; // 水平：0
@@ -230,12 +224,12 @@ public class PlayerPlatformer : MonoBehaviour
             rb.gravityScale = verticalDashGravity; // 斜向：正常
         }
         
-        // 向上冲刺降低初始速度
+        // ★ 向上冲刺降低初始速度
         float actualSpeed = isUpwardDash ? (dashSpeed * upwardDashSpeedMultiplier) : dashSpeed;
         rb.linearVelocity = dir.normalized * actualSpeed;
 
         float elapsed = 0f;
-        while (elapsed < dashTime && !dashInterrupted)
+        while (elapsed < dashTime)
         {
             elapsed += Time.deltaTime;
             
@@ -246,7 +240,7 @@ public class PlayerPlatformer : MonoBehaviour
             }
             else
             {
-                // 垂直/斜向冲刺：不再每帧设置速度，完全交给物理引擎处理
+                // ★ 垂直/斜向冲刺：不再每帧设置速度，完全交给物理引擎处理
                 // 什么都不做，让重力自然作用
             }
             
@@ -255,11 +249,9 @@ public class PlayerPlatformer : MonoBehaviour
 
         rb.gravityScale = originalGravity;
         isDashing = false;
-        dashRoutine = null;
-        dashInterrupted = false;
     }
 
-    // 八向量化
+    // ★ 八向量化
     Vector2 QuantizeToEightDir(Vector2 input)
     {
         if (input.sqrMagnitude < 1e-6f) return Vector2.right;
@@ -309,24 +301,16 @@ public class PlayerPlatformer : MonoBehaviour
     public void ResetDashState()
     {
         // dash 状态清零
-        if (dashRoutine != null)
-        {
-            StopCoroutine(dashRoutine);
-            dashRoutine = null;
-        }
-
         isDashing = false;
         airDashUsed = false;
-        dashInterrupted = false;
 
         // 让冷却计时也清零
         lastDashTime = Time.time - dashCooldown;
 
         rb.linearVelocity = Vector2.zero;
-        rb.gravityScale = defaultGravity;
     }
 
-    // 对外接口：开启/关闭玩家操作
+        // 对外接口：开启/关闭玩家操作
     public void SetControlEnabled(bool enabled)
     {
         canControl = enabled;
@@ -335,11 +319,9 @@ public class PlayerPlatformer : MonoBehaviour
         {
             // 禁用时：停掉所有协程、速度清零、关重力
             StopAllCoroutines();
-            dashRoutine = null;
             isDashing = false;
             isWallSliding = false;
             wallJumpLock = false;
-            dashInterrupted = false;
 
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
@@ -352,33 +334,5 @@ public class PlayerPlatformer : MonoBehaviour
         }
     }
 
-    // 冲刺中撞到敌人：停在敌人原本位置
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (!isDashing) return;
-
-        if (!IsInLayerMask(collision.collider.gameObject, dashEnemyMask))
-            return;
-
-        // 敌人当前位置（中心点）
-        Vector3 enemyPos = collision.collider.transform.position;
-
-        // 通知 dash 协程结束
-        dashInterrupted = true;
-
-        // 停止刚体运动，恢复重力
-        rb.linearVelocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-        rb.gravityScale = defaultGravity;
-
-        // 玩家移动到敌人的位置（保留原来的 z）
-        transform.position = new Vector3(enemyPos.x, enemyPos.y, transform.position.z);
-
-        isDashing = false;
-    }
-
-    bool IsInLayerMask(GameObject obj, LayerMask mask)
-    {
-        return (mask.value & (1 << obj.layer)) != 0;
-    }
 }
+*/
