@@ -128,6 +128,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      propertyPath: normalColor.b
+      value: 0.073260896
+      objectReference: {fileID: 0}
+    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      propertyPath: normalColor.g
+      value: 0.3433962
+      objectReference: {fileID: 0}
+    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      propertyPath: normalColor.r
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       propertyPath: dashEnemyMask.m_Bits
       value: 128
       objectReference: {fileID: 0}
