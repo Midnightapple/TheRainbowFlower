@@ -140,6 +140,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      propertyPath: dashDetectDistance
+      value: 2.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       propertyPath: dashEnemyMask.m_Bits
       value: 128
       objectReference: {fileID: 0}
@@ -181,7 +185,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -17.73
+      value: -18.29
       objectReference: {fileID: 0}
     - target: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       propertyPath: m_LocalPosition.y
@@ -221,20 +225,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 858808314}
+    m_AddedGameObjects: []
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 807209055}
   m_SourcePrefab: {fileID: 100100000, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
---- !u!4 &147384046 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-  m_PrefabInstance: {fileID: 147384045}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &807209048 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
@@ -295,11 +291,11 @@ Transform:
   m_GameObject: {fileID: 858808313}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.19, y: -0.1, z: 0}
-  m_LocalScale: {x: 2, y: 0.83333325, z: 1}
+  m_LocalPosition: {x: -16.3122, y: 1.4360024, z: 0}
+  m_LocalScale: {x: 1.24, y: 0.9916462, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 147384046}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &858808315
 MonoBehaviour:
@@ -487,4 +483,5 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 147384045}
+  - {fileID: 858808314}
   - {fileID: 2069036896}
