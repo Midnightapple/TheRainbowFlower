@@ -127,61 +127,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: normalColor.b
-      value: 0.073260896
+    - target: {fileID: 1038989355522300731, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.8
       objectReference: {fileID: 0}
-    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: normalColor.g
-      value: 0.3433962
+    - target: {fileID: 2235114483969376342, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      propertyPath: throwSpeed
+      value: 22
       objectReference: {fileID: 0}
-    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: normalColor.r
-      value: 0
+    - target: {fileID: 2235114483969376342, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      propertyPath: maxDistance
+      value: 16
       objectReference: {fileID: 0}
-    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: dashDetectDistance
-      value: 2.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 95493788629552701, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: dashEnemyMask.m_Bits
-      value: 128
-      objectReference: {fileID: 0}
-    - target: {fileID: 742007002352118832, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: spawnPoint
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 1968126070162361822, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 7482667652216324306, guid: 39e6b9b5dd2e19547952b9b28a4e4b4d, type: 3}
-    - target: {fileID: 1968126070162361822, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: m_Color.b
-      value: 0.08591741
-      objectReference: {fileID: 0}
-    - target: {fileID: 1968126070162361822, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: m_Color.g
-      value: 0.3207547
-      objectReference: {fileID: 0}
-    - target: {fileID: 1968126070162361822, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: m_Color.r
-      value: 0
+    - target: {fileID: 2235114483969376342, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
+      propertyPath: throwOffset
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.62
-      objectReference: {fileID: 0}
-    - target: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1.1899755
-      objectReference: {fileID: 0}
-    - target: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8456226822246388072, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -224,46 +188,11 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 5197919445708930949, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 807209055}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
---- !u!1 &807209048 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
-  m_PrefabInstance: {fileID: 147384045}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &807209055
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 807209048}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1bf1273d29ba11e4ebf22a112caffedc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerSkills
-  shieldCount: 0
-  attackKey: 101
-  attackCharges: 0
-  attackCost: 1
-  attackRange: 5
-  enemyMask:
-    serializedVersion: 2
-    m_Bits: 128
-  canPlacePlatform: 0
-  platformKey: 113
-  platformPrefab: {fileID: 5775425488327601433, guid: bf45ea3bcb4f3a54eb3bfc26146dae90, type: 3}
-  platformCharges: 1
-  platformCheckSize: {x: 2, y: 0.4}
-  enemyMaskForPlatform:
-    serializedVersion: 2
-    m_Bits: 128
 --- !u!1 &858808313
 GameObject:
   m_ObjectHideFlags: 0

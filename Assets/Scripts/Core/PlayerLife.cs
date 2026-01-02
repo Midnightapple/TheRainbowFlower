@@ -8,12 +8,14 @@ public class PlayerLife : MonoBehaviour
     PlayerRespawn respawn;
     PlayerSkills skills;
     PlayerPlatformer platformer;
+    PlayerThrowWeapon throwWeapon;
 
     void Awake()
     {
         respawn = GetComponent<PlayerRespawn>();
         skills = GetComponent<PlayerSkills>();
         platformer = GetComponent<PlayerPlatformer>();
+        throwWeapon = GetComponent<PlayerThrowWeapon>();
     }
 
 
@@ -32,6 +34,7 @@ public class PlayerLife : MonoBehaviour
             respawn.Respawn();
             ResetAllEnemies();
             ResetAllPlatforms();
+            ResetWeaponState();
             isDead = false;
             return;
         }
@@ -50,6 +53,7 @@ public class PlayerLife : MonoBehaviour
         respawn.Respawn();
         ResetAllEnemies();
         ResetAllPlatforms();
+        ResetWeaponState();
         isDead = false;
     }
 
@@ -71,6 +75,14 @@ public class PlayerLife : MonoBehaviour
     void ResetAllPlatforms()
     {
         SkillPlatformRuntime.ResetAll();
+    }
+
+    void ResetWeaponState()
+    {
+        if (throwWeapon != null)
+        {
+            throwWeapon.ResetWeaponOnDeath();
+        }
     }
 
 }
