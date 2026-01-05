@@ -194,7 +194,7 @@ public class ThrownWeapon : MonoBehaviour
         return (mask.value & (1 << layer)) != 0;
     }
 
-    public void ForceDestory()
+    public void ForceDestroy()
     {
         Destroy(gameObject);
     }

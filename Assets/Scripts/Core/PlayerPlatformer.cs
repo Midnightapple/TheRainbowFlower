@@ -43,6 +43,10 @@ public class PlayerPlatformer : MonoBehaviour
     [Tooltip("冲刺时可以被击杀的敌人所在 Layer")]
     public LayerMask dashEnemyMask;
 
+    [Header("Dash Kill")]
+    [Tooltip("是否允许冲刺击杀敌人")]
+    public bool dashKillEnabled = true;
+
     [Header("Dash Aim Feedback")]
     [Tooltip("是否开启‘前方有可冲刺敌人’的可视化提示")]
     public bool enableDashAimFeedback = true;
@@ -411,10 +415,17 @@ public class PlayerPlatformer : MonoBehaviour
         }
     }
 
+    public void SetDashKillEnabled(bool enabled)
+    {
+        dashKillEnabled = enabled;
+    }
+
     // 冲刺中撞到敌人：停在敌人原本位置
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (!isDashing) return;
+
+        if (!dashKillEnabled) return;
 
         if (!IsInLayerMask(collision.collider.gameObject, dashEnemyMask))
             return;
