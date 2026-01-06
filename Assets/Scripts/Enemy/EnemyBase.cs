@@ -41,14 +41,16 @@ public class EnemyBase : MonoBehaviour
         var life   = other.GetComponent<PlayerLife>();
         var skills = other.GetComponent<PlayerSkills>();
         bool isDashing = false;
+        bool dashKillOn = false;
         var ctrl = other.GetComponent<PlayerPlatformer>();
         if (ctrl != null)
         {
             isDashing = ctrl.isDashing;
+            dashKillOn = ctrl.dashKillEnabled;
         }
 
-        // ① 冲刺命中：敌人直接死亡（无CD限制）
-        if (isDashing)
+        // 冲刺命中：敌人直接死亡（无CD限制）
+        if (isDashing && dashKillOn)
         {
             Die();
             return;
@@ -57,7 +59,7 @@ public class EnemyBase : MonoBehaviour
         // 只有非冲刺时才检查CD
         if (Time.time < lastHitTime + hitCooldown) return;
 
-        // ② 非冲刺，尝试用护盾抵消
+        // 非冲刺，尝试用护盾抵消
         if (skills != null && skills.TryConsumeShield())
         {
             KnockbackOneStep(other.bounds.center);
@@ -65,7 +67,7 @@ public class EnemyBase : MonoBehaviour
             return;
         }
 
-        // ③ 没护盾：玩家死亡
+        // 没护盾：玩家死亡
         if (life != null)
         {
             life.Die(KillReason.Enemy);
