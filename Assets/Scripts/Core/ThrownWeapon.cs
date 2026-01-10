@@ -24,30 +24,37 @@ public class ThrownWeapon : MonoBehaviour
     WeaponState state = WeaponState.Idle;
 
     public void Init(
-        PlayerThrowWeapon ownerWeapon,
-        PlayerPlatformer ownerPlayer,
-        Vector2 dir,
-        float speed,
-        float maxDistance)
+    PlayerThrowWeapon ownerWeapon,
+    PlayerPlatformer ownerPlayer,
+    Vector2 dir,
+    float speed,
+    float maxDistance)
+{
+    this.ownerWeapon = ownerWeapon;
+    this.ownerPlayer = ownerPlayer;
+    this.flyDir      = dir.normalized;
+    this.flySpeed    = speed;
+    this.maxDistance = maxDistance;
+
+    startPos = transform.position;
+    state    = WeaponState.Flying;
+
+    if (flyDir.sqrMagnitude > 0.0001f)
     {
-        this.ownerWeapon = ownerWeapon;
-        this.ownerPlayer = ownerPlayer;
-        this.flyDir = dir.normalized;
-        this.flySpeed = speed;
-        this.maxDistance = maxDistance;
-
-        startPos = transform.position;
-        state = WeaponState.Flying;
-
-        if (rb == null) rb = GetComponent<Rigidbody2D>();
-        if (col == null) col = GetComponent<Collider2D>();
-        if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
-
-        rb.bodyType = RigidbodyType2D.Dynamic;                       
-        rb.gravityScale = gravityWhenFlying;
-        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-        rb.linearVelocity = flyDir * flySpeed;
+        // transform.up = flyDir;
+        transform.right = flyDir;
     }
+
+    if (rb == null) rb = GetComponent<Rigidbody2D>();
+    if (col == null) col = GetComponent<Collider2D>();
+    if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
+
+    rb.bodyType = RigidbodyType2D.Dynamic;
+    rb.gravityScale = gravityWhenFlying;
+    rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+    rb.linearVelocity = flyDir * flySpeed;
+}
+
 
     void Awake()
     {

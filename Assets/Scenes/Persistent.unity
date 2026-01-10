@@ -141,7 +141,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2235114483969376342, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       propertyPath: throwOffset
-      value: 0.9
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2520396386579230313, guid: 7aa91218007d5da41ab6d0502215094f, type: 3}
       propertyPath: m_Name
