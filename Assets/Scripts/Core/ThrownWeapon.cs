@@ -24,37 +24,39 @@ public class ThrownWeapon : MonoBehaviour
     WeaponState state = WeaponState.Idle;
 
     public void Init(
-    PlayerThrowWeapon ownerWeapon,
-    PlayerPlatformer ownerPlayer,
-    Vector2 dir,
-    float speed,
-    float maxDistance)
-{
-    this.ownerWeapon = ownerWeapon;
-    this.ownerPlayer = ownerPlayer;
-    this.flyDir      = dir.normalized;
-    this.flySpeed    = speed;
-    this.maxDistance = maxDistance;
-
-    startPos = transform.position;
-    state    = WeaponState.Flying;
-
-    if (flyDir.sqrMagnitude > 0.0001f)
+        PlayerThrowWeapon ownerWeapon,
+        PlayerPlatformer ownerPlayer,
+        Vector2 dir,
+        float speed,
+        float maxDistance)
     {
-        // transform.up = flyDir;
-        transform.right = flyDir;
+        this.ownerWeapon = ownerWeapon;
+        this.ownerPlayer = ownerPlayer;
+        this.flyDir      = dir.normalized;
+        this.flySpeed    = speed;
+        this.maxDistance = maxDistance;
+
+        startPos = transform.position;
+        state    = WeaponState.Flying;
+
+        // 让武器细长边朝飞行方向
+        if (flyDir.sqrMagnitude > 0.0001f)
+        {
+            // 如果贴图是横向（朝右）
+            transform.right = flyDir;
+            // 如果贴图是纵向（朝上），就改成：
+            // transform.up = flyDir;
+        }
+
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
+        if (col == null) col = GetComponent<Collider2D>();
+        if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
+
+        rb.bodyType = RigidbodyType2D.Dynamic;
+        rb.gravityScale = gravityWhenFlying;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+        rb.linearVelocity = flyDir * flySpeed;
     }
-
-    if (rb == null) rb = GetComponent<Rigidbody2D>();
-    if (col == null) col = GetComponent<Collider2D>();
-    if (rb == null) rb = gameObject.AddComponent<Rigidbody2D>();
-
-    rb.bodyType = RigidbodyType2D.Dynamic;
-    rb.gravityScale = gravityWhenFlying;
-    rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-    rb.linearVelocity = flyDir * flySpeed;
-}
-
 
     void Awake()
     {
@@ -126,7 +128,7 @@ public class ThrownWeapon : MonoBehaviour
         state = WeaponState.Returning;
     }
 
-    // ========= 碰撞 =========
+    // 碰撞
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -145,25 +147,37 @@ public class ThrownWeapon : MonoBehaviour
         GameObject obj = other.gameObject;
         int otherLayer = obj.layer;
 
-        // 3）玩家拾取 / 空中抓
+        // 玩家拾取 / 空中抓 / 挂在武器上
         if (obj.CompareTag("Player"))
         {
             bool inAir = !ownerPlayer.IsOnGround;
 
-            if (inAir && state == WeaponState.FallingOrStuck)
+            // 武器已经卡在墙 / 天花板上，同时玩家在空中
+            if (state == WeaponState.FallingOrStuck && inAir)
             {
-                ownerWeapon.OnWeaponCaughtInAir();
-            }
-            else
-            {
-                ownerWeapon.OnWeaponReturned();
+                // 如果此时按着投掷键（J），则挂在武器上，不立即取下
+                if (Input.GetKey(ownerWeapon.throwKey))
+                {
+                    ownerWeapon.StartHookFromWeapon(this);
+                    // 不销毁武器，让它继续挂在墙上
+                    return;
+                }
+                else
+                {
+                    // 没按 J，按老逻辑空中接住武器，重置 dash
+                    ownerWeapon.OnWeaponCaughtInAir();
+                    Destroy(gameObject);
+                    return;
+                }
             }
 
+            // 其它情况（比如武器返回途中撞到玩家，或地上走过去捡）
+            ownerWeapon.OnWeaponReturned();
             Destroy(gameObject);
             return;
         }
 
-        // 1）打到敌人
+        // 打到敌人
         if (IsInLayerMask(otherLayer, enemyMask))
         {
             EnemyBase enemy = obj.GetComponentInParent<EnemyBase>();
@@ -180,7 +194,7 @@ public class ThrownWeapon : MonoBehaviour
             return;
         }
 
-        // 2）撞到环境：卡住
+        // 撞到环境卡住
         if (IsInLayerMask(otherLayer, environmentMask))
         {
             if (rb != null)

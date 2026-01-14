@@ -25,6 +25,15 @@ public class PlayerThrowWeapon : MonoBehaviour
     [Tooltip("斜向的竖直分量：越小越平，0.5 比较适中，1 是 45°")]
     public float diagonalYFactor = 0.5f;
 
+    [Header("挂在武器上")]
+    public float maxHangTime = 2.5f;                           // 挂多久后开始力竭变色
+    public Color tiredColor = new Color(1f, 0.7f, 0.7f);       // 力竭时的颜色
+
+    bool isHooked = false;        // 当前是否正挂在武器上
+    ThrownWeapon hookedWeapon;    // 正在挂着的那把武器
+    float currentHangTime = 0f;   // 当前这次挂住已经持续了多久
+    Color originalColor;          // 角色原始颜色（用于恢复）
+
     [HideInInspector]
     public bool hasWeapon = true;            // 角色当前是否“手里有武器”
 
@@ -43,10 +52,20 @@ public class PlayerThrowWeapon : MonoBehaviour
     {
         platformer = GetComponent<PlayerPlatformer>();
         sr = GetComponent<SpriteRenderer>();
+        if (sr != null)
+        {
+            originalColor = sr.color;
+        }
     }
 
     void Update()
     {
+        if (isHooked)
+        {
+            UpdateHook();
+            return;
+        }
+
         // 读取输入
         float x = Input.GetAxisRaw(horizontalAxis);
         float y = Input.GetAxisRaw(verticalAxis);
@@ -246,4 +265,96 @@ public class PlayerThrowWeapon : MonoBehaviour
             platformer.SetDashKillEnabled(true);
         }
     }
+
+        // 从武器那边发起的“开始挂住”
+    public void StartHookFromWeapon(ThrownWeapon weapon)
+    {
+        if (weapon == null) return;
+        if (platformer == null) return;
+        if (isHooked) return; // 已经挂着了就不用再来一次
+
+        isHooked = true;
+        hookedWeapon = weapon;
+        currentHangTime = 0f;
+
+        // 锁定玩家操作（包括重力），防止自己乱动
+        platformer.SetControlEnabled(false);
+
+        // 恢复成原本颜色（以免上一次残留）
+        if (sr != null)
+        {
+            sr.color = originalColor;
+        }
+    }
+
+    // —— 挂住过程：每帧调用 —— //
+    void UpdateHook()
+    {
+        // 万一武器被删了，就自动掉下去
+        if (hookedWeapon == null)
+        {
+            StopHook(false);
+            return;
+        }
+
+        // 把玩家位置锁在武器位置（你可以根据需要加一点偏移）
+        Vector3 wp = hookedWeapon.transform.position;
+        transform.position = new Vector3(wp.x, wp.y, transform.position.z);
+
+        // 累计挂住时间
+        currentHangTime += Time.deltaTime;
+
+        // 挂太久角色变色表示力竭
+        if (sr != null)
+        {
+            sr.color = (currentHangTime >= maxHangTime) ? tiredColor : originalColor;
+        }
+
+        // 规则：必须一直按着 J 才能继续挂
+        // 一旦松开 J，就离开武器，并把武器取下（回到手上）
+        if (!Input.GetKey(throwKey))
+        {
+            StopHook(true);
+        }
+    }
+
+    // —— 停止挂住 —— //
+    void StopHook(bool takeWeapon)
+    {
+        isHooked = false;
+        currentHangTime = 0f;
+
+        // 恢复颜色
+        if (sr != null)
+        {
+            sr.color = originalColor;
+        }
+
+        // 恢复玩家操作
+        if (platformer != null)
+        {
+            platformer.SetControlEnabled(true);
+        }
+
+        if (takeWeapon && hookedWeapon != null)
+        {
+            // 相当于在空中接住武器：销毁场景里的武器，让武器回到手上，并重置 dash
+            if (currentWeapon == hookedWeapon)
+            {
+                hookedWeapon.ForceDestroy();
+                currentWeapon = null;
+            }
+
+            hasWeapon = true;
+
+            if (platformer != null)
+            {
+                platformer.ResetDashState();
+                platformer.SetDashKillEnabled(true);
+            }
+        }
+
+        hookedWeapon = null;
+    }
+
 }
