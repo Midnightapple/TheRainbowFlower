@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 8024352590290974042}
   - component: {fileID: 4917841596698104608}
   - component: {fileID: 2235114483969376342}
+  - component: {fileID: 4112213892992168245}
   m_Layer: 3
   m_Name: Player
   m_TagString: Player
@@ -34,14 +35,13 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -17.76, y: 0.21, z: 0}
-  m_LocalScale: {x: 0.62, y: 1.1899755, z: 1}
+  m_LocalScale: {x: 1.461836, y: 1.5137678, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 302545226370429741}
   - {fileID: 8540686460319193914}
   - {fileID: 7782229951369320409}
   - {fileID: 9171718442693412283}
-  - {fileID: 1038989355522300731}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &1968126070162361822
@@ -69,7 +69,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -91,8 +91,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 39e6b9b5dd2e19547952b9b28a4e4b4d, type: 3}
-  m_Color: {r: 0, g: 0.3207547, b: 0.08591741, a: 1}
+  m_Sprite: {fileID: 7103749574173715010, guid: 97dbc781e21dcd34c930a2b196a422f3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -163,8 +163,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 1, y: 1}
+  m_Offset: {x: -0.011074823, y: 0}
+  m_Size: {x: 0.55702925, y: 0.93583393}
   m_Direction: 0
 --- !u!114 &95493788629552701
 MonoBehaviour:
@@ -208,6 +208,7 @@ MonoBehaviour:
   dashEnemyMask:
     serializedVersion: 2
     m_Bits: 128
+  dashKillEnabled: 1
   enableDashAimFeedback: 1
   dashDetectDistance: 2.3
   dashAimRadius: 0.4
@@ -281,14 +282,39 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerThrowWeapon
   weaponPrefab: {fileID: 150779101227117207, guid: 2442278eace7de34b9776308b2a8837c, type: 3}
-  throwOrigin: {fileID: 1038989355522300731}
-  throwSpeed: 18
-  maxDistance: 8
+  throwSpeed: 22
+  maxDistance: 16
   throwKey: 106
   recallKey: 107
   horizontalAxis: Horizontal
   verticalAxis: Vertical
+  throwOffset: 1
+  diagonalYFactor: 0.5
+  maxHangTime: 2.5
+  tiredColor: {r: 1, g: 0.7, b: 0.7, a: 1}
   hasWeapon: 1
+--- !u!95 &4112213892992168245
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2520396386579230313}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 248f2b1e068d71d40af6787b49f0349f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &5155045582369471174
 GameObject:
   m_ObjectHideFlags: 0
@@ -320,96 +346,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8456226822246388072}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &5197919445708930949
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1038989355522300731}
-  - component: {fileID: 4066570741006431060}
-  m_Layer: 0
-  m_Name: ThrowOrigin
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1038989355522300731
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5197919445708930949}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.48387286, y: 0.08832117, z: 0}
-  m_LocalScale: {x: 0.43655258, y: 0.24229161, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8456226822246388072}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &4066570741006431060
-SpriteRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5197919445708930949}
-  m_Enabled: 0
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
-  m_SpriteSortPoint: 0
 --- !u!1 &6859924844996423816
 GameObject:
   m_ObjectHideFlags: 0
