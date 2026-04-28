@@ -40,6 +40,30 @@ public class PlayerPlatformer : MonoBehaviour
     public float verticalDashGravity = 4f;    // 垂直/斜向冲刺时的重力
     public float upwardDashSpeedMultiplier = 0.7f;
 
+    [Header("Dash Hit Enemy")]
+    [Tooltip("冲刺时可以被击杀的敌人所在 Layer")]
+    public LayerMask dashEnemyMask;
+
+    [Header("Dash Kill")]
+    [Tooltip("是否允许冲刺击杀敌人")]
+    public bool dashKillEnabled = true;
+
+    [Header("Dash Aim Feedback")]
+    [Tooltip("是否开启‘前方有可冲刺敌人’的可视化提示")]
+    public bool enableDashAimFeedback = true;
+
+    [Tooltip("检测前方敌人时的射线距离")]
+    public float dashDetectDistance = 3f;
+
+    [Tooltip("检测前方敌人用的圆形半径")]
+    public float dashAimRadius = 0.4f;
+
+    [Tooltip("没有目标时角色颜色")]
+    public Color normalColor = Color.white;
+
+    [Tooltip("前方有可冲刺目标时角色颜色")]
+    public Color dashAimColor = Color.cyan;
+
     [HideInInspector]
     public bool canControl = true;
     float defaultGravity;
@@ -55,6 +79,8 @@ public class PlayerPlatformer : MonoBehaviour
     bool isWallSliding;
     bool wallJumpLock;
     public bool isDashing;
+    bool dashInterrupted;
+    Coroutine dashRoutine;
     bool wasOnGround;
 
     // 空中冲刺是否已用掉（只在落地重置）
@@ -74,6 +100,11 @@ public class PlayerPlatformer : MonoBehaviour
         sr = GetComponent<SpriteRenderer>();
         rb.gravityScale = 3.2f;
         defaultGravity = rb.gravityScale;
+
+        if (sr != null)
+        {
+            sr.color = normalColor;
+        }
     }
 
     void Update()
@@ -87,7 +118,8 @@ public class PlayerPlatformer : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
         Vector2 rawDir = new Vector2(x, y);
-        if (Mathf.Abs(x) > 0.01f) lastMoveDir = new Vector2(Mathf.Sign(x), 0f);
+        if (Mathf.Abs(x) > 0.01f) 
+            lastMoveDir = new Vector2(Mathf.Sign(x), 0f);
 
         // 计时器
         lastPressJumpTime -= Time.deltaTime;
@@ -101,11 +133,6 @@ public class PlayerPlatformer : MonoBehaviour
         bool touchingWall = (touchingWallL || touchingWallR) && !isOnGround;
 
         // 落地刷新：土狼 + 空中冲刺次数
-        //if (isOnGround && !wasOnGround)
-        //{
-        //    airDashUsed = false;
-        //}
-
         if (isOnGround)
         {
             lastOnGroundTime = coyoteTime;
@@ -113,7 +140,15 @@ public class PlayerPlatformer : MonoBehaviour
         }
 
         // 跳跃缓冲
-        if (Input.GetButtonDown("Jump")) lastPressJumpTime = jumpBuffer;
+        if (Input.GetButtonDown("Jump")) 
+            lastPressJumpTime = jumpBuffer;
+
+        // —— 冲刺命中范围提示（不在冲刺中时才检测）——
+        if (enableDashAimFeedback && sr != null && !isDashing)
+        {
+            bool hasTarget = CheckDashTargetAhead(rawDir);
+            sr.color = hasTarget ? dashAimColor : normalColor;
+        }
 
         // —— 冲刺触发：八向 + 空中仅一次 —— //
         if (!isDashing && Time.time >= lastDashTime + dashCooldown && Input.GetKeyDown(dashKey))
@@ -124,7 +159,13 @@ public class PlayerPlatformer : MonoBehaviour
                                 : (lastMoveDir.sqrMagnitude > 0 ? lastMoveDir : Vector2.right);
 
                 Vector2 dir = QuantizeToEightDir(chosen);
-                StartCoroutine(CoDash(dir));
+
+                // 启动 dash 协程前，清理旧的
+                if (dashRoutine != null)
+                {
+                    StopCoroutine(dashRoutine);
+                }
+                dashRoutine = StartCoroutine(CoDash(dir));
 
                 airDashUsed = true;  // 无论哪里冲刺都标记
             }
@@ -163,10 +204,12 @@ public class PlayerPlatformer : MonoBehaviour
 
         // 墙滑
         isWallSliding = (touchingWallL || touchingWallR) && rb.linearVelocity.y < wallSlideSpeed && !isDashing;
-        if (isWallSliding) rb.linearVelocity = new Vector2(rb.linearVelocity.x, wallSlideSpeed);
+        if (isWallSliding) 
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, wallSlideSpeed);
 
         // 朝向翻转
-        if (sr && Mathf.Abs(x) > 0.01f) sr.flipX = x < 0;
+        if (sr && Mathf.Abs(x) > 0.01f) 
+            sr.flipX = x < 0;
     }
 
     void JumpUp()
@@ -197,39 +240,40 @@ public class PlayerPlatformer : MonoBehaviour
     IEnumerator CoDash(Vector2 dir)
     {
         isDashing = true;
+        dashInterrupted = false;
         lastDashTime = Time.time;
 
         float originalGravity = rb.gravityScale;
         
-        // ★ 判断冲刺方向
+        // 判断冲刺方向
         bool isHorizontalDash = Mathf.Abs(dir.y) < 0.1f;
         bool isUpwardDash = dir.y > 0.1f;
         bool isDownwardDash = dir.y < -0.1f;
         
-        // ★ 设置重力
+        // 设置重力
         if (isHorizontalDash)
         {
             rb.gravityScale = horizontalDashGravity; // 水平：0
         }
         else if (isUpwardDash)
         {
-            rb.gravityScale = verticalDashGravity; // 向上：强重力
+            rb.gravityScale = verticalDashGravity;   // 向上：强重力
         }
         else if (isDownwardDash)
         {
-            rb.gravityScale = 0f; // 向下：无重力（加速下落）
+            rb.gravityScale = 0f;                   // 向下：无重力（加速下落）
         }
         else
         {
-            rb.gravityScale = verticalDashGravity; // 斜向：正常
+            rb.gravityScale = verticalDashGravity;   // 斜向：正常
         }
         
-        // ★ 向上冲刺降低初始速度
+        // 向上冲刺降低初始速度
         float actualSpeed = isUpwardDash ? (dashSpeed * upwardDashSpeedMultiplier) : dashSpeed;
         rb.linearVelocity = dir.normalized * actualSpeed;
 
         float elapsed = 0f;
-        while (elapsed < dashTime)
+        while (elapsed < dashTime && !dashInterrupted)
         {
             elapsed += Time.deltaTime;
             
@@ -240,8 +284,7 @@ public class PlayerPlatformer : MonoBehaviour
             }
             else
             {
-                // ★ 垂直/斜向冲刺：不再每帧设置速度，完全交给物理引擎处理
-                // 什么都不做，让重力自然作用
+                // 垂直/斜向冲刺：不再每帧设置速度，完全交给物理引擎处理
             }
             
             yield return null;
@@ -249,9 +292,17 @@ public class PlayerPlatformer : MonoBehaviour
 
         rb.gravityScale = originalGravity;
         isDashing = false;
+        dashRoutine = null;
+        dashInterrupted = false;
+
+        // 结束 dash 时，如果启用了提示，恢复正常颜色
+        if (enableDashAimFeedback && sr != null)
+        {
+            sr.color = normalColor;
+        }
     }
 
-    // ★ 八向量化
+    // 八向量化
     Vector2 QuantizeToEightDir(Vector2 input)
     {
         if (input.sqrMagnitude < 1e-6f) return Vector2.right;
@@ -296,21 +347,44 @@ public class PlayerPlatformer : MonoBehaviour
             Gizmos.color = Color.cyan;
             Gizmos.DrawWireSphere(wallCheckRight.position, wallRadius);
         }
+
+        // 在场景视图里画出 dash 检测范围，方便你调试
+        Gizmos.color = Color.magenta;
+        Vector2 dir = Application.isPlaying 
+            ? (lastMoveDir.sqrMagnitude > 0.01f ? lastMoveDir.normalized : Vector2.right)
+            : Vector2.right;
+        Vector3 start = groundCheck ? groundCheck.position : transform.position;
+        Gizmos.DrawWireSphere(start, dashAimRadius);
+        Gizmos.DrawLine(start, start + (Vector3)(dir * dashDetectDistance));
     }
 
     public void ResetDashState()
     {
         // dash 状态清零
+        if (dashRoutine != null)
+        {
+            StopCoroutine(dashRoutine);
+            dashRoutine = null;
+        }
+
         isDashing = false;
         airDashUsed = false;
+        dashInterrupted = false;
 
         // 让冷却计时也清零
         lastDashTime = Time.time - dashCooldown;
 
         rb.linearVelocity = Vector2.zero;
+        rb.gravityScale = defaultGravity;
+
+        // 颜色也重置
+        if (enableDashAimFeedback && sr != null)
+        {
+            sr.color = normalColor;
+        }
     }
 
-        // 对外接口：开启/关闭玩家操作
+    // 对外接口：开启/关闭玩家操作
     public void SetControlEnabled(bool enabled)
     {
         canControl = enabled;
@@ -319,9 +393,11 @@ public class PlayerPlatformer : MonoBehaviour
         {
             // 禁用时：停掉所有协程、速度清零、关重力
             StopAllCoroutines();
+            dashRoutine = null;
             isDashing = false;
             isWallSliding = false;
             wallJumpLock = false;
+            dashInterrupted = false;
 
             rb.linearVelocity = Vector2.zero;
             rb.angularVelocity = 0f;
@@ -332,7 +408,90 @@ public class PlayerPlatformer : MonoBehaviour
             // 恢复操作：把重力恢复
             rb.gravityScale = defaultGravity;
         }
+
+        // 切换控制时也顺手恢复颜色
+        if (enableDashAimFeedback && sr != null)
+        {
+            sr.color = normalColor;
+        }
     }
 
+    public void SetDashKillEnabled(bool enabled)
+    {
+        dashKillEnabled = enabled;
+    }
+
+    // 冲刺中撞到敌人：停在敌人原本位置
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (!isDashing) return;
+
+        if (!dashKillEnabled) return;
+
+        if (!IsInLayerMask(collision.collider.gameObject, dashEnemyMask))
+            return;
+
+        // 敌人当前位置（中心点）
+        Vector3 enemyPos = collision.collider.transform.position;
+
+        // 通知 dash 协程结束
+        dashInterrupted = true;
+
+        // 停止刚体运动，恢复重力
+        rb.linearVelocity = Vector2.zero;
+        rb.angularVelocity = 0f;
+        rb.gravityScale = defaultGravity;
+
+        // 玩家移动到敌人的位置（保留原来的 z）
+        transform.position = new Vector3(enemyPos.x, enemyPos.y, transform.position.z);
+
+        isDashing = false;
+
+        // 碰到敌人的瞬间也恢复颜色
+        if (enableDashAimFeedback && sr != null)
+        {
+            sr.color = normalColor;
+        }
+    }
+
+    bool IsInLayerMask(GameObject obj, LayerMask mask)
+    {
+        return (mask.value & (1 << obj.layer)) != 0;
+    }
+
+    // 检测前方是否有可被 dash 命中的敌人，用于可视化提示
+    bool CheckDashTargetAhead(Vector2 rawInput)
+    {
+        if (dashEnemyMask.value == 0)
+            return false;
+
+        // 选择一个检测方向：优先当前输入，其次 lastMoveDir
+        Vector2 dir;
+        if (rawInput.sqrMagnitude > 0.01f)
+        {
+            dir = rawInput.normalized;
+        }
+        else if (lastMoveDir.sqrMagnitude > 0.01f)
+        {
+            dir = lastMoveDir.normalized;
+        }
+        else
+        {
+            dir = Vector2.right;
+        }
+
+        Vector3 start = groundCheck ? groundCheck.position : transform.position;
+
+        RaycastHit2D hit = Physics2D.CircleCast(
+            start,
+            dashAimRadius,
+            dir,
+            dashDetectDistance,
+            dashEnemyMask
+        );
+
+        return hit.collider != null;
+    }
 }
+
 */
