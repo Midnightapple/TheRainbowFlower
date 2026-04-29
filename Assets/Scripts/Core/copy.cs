@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 
+
 [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
 public class PlayerPlatformer : MonoBehaviour
 {
@@ -69,6 +70,7 @@ public class PlayerPlatformer : MonoBehaviour
     float defaultGravity;
 
     // 组件
+    Animator anim;
     Rigidbody2D rb;
     SpriteRenderer sr;
 
@@ -96,6 +98,7 @@ public class PlayerPlatformer : MonoBehaviour
 
     void Awake()
     {
+        anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         rb.gravityScale = 3.2f;
@@ -109,6 +112,9 @@ public class PlayerPlatformer : MonoBehaviour
 
     void Update()
     {
+        float moveInput = Input.GetAxisRaw("Horizontal");
+        anim.SetBool("isWalking", Mathf.Abs(moveInput) > 0.01f);
+        
         if (!canControl)
         {
             return;
